@@ -1,0 +1,81 @@
+import aerosandbox as asb
+
+wing_airfoil = asb.Airfoil("e222") 
+tail_airfoil = asb.Airfoil("naca0010")
+
+
+wing = asb.Wing(
+    symmetric=True,
+    xsecs=[
+        asb.WingXSec(
+            xyz_le=[0, 0, 0],
+            chord = 0.3,
+            airfoil = wing_airfoil,
+        ),
+        asb.WingXSec(
+            xyz_le=[0,0.5,0],
+            chord = 0.3,
+            airfoil=wing_airfoil,
+        ),
+        asb.WingXSec(
+            xyz_le=[(0.1) / 4, 1, 0],
+            chord = 0.2,
+            airfoil = wing_airfoil,
+        ),
+    ],
+)
+
+hstab = asb.Wing(
+    symmetric=True,
+    xsecs=[
+        asb.WingXSec(
+            xyz_le=[1,0,0],
+            chord = 0.1,
+            airfoil = tail_airfoil,
+        ),
+        asb.WingXSec(
+            xyz_le=[1,0.2,0],
+            chord = 0.1,
+            airfoil = tail_airfoil,
+        )
+    ]
+)
+
+vstab = asb.Wing(
+    symmetric=False,
+    xsecs=[
+        asb.WingXSec(
+            xyz_le = [1,0,0],
+            chord = 0.05,
+            airfoil = tail_airfoil,
+        ),
+        asb.WingXSec(
+            xyz_le=[1,0,0.2],
+            chord = 0.05,
+            airfoil = tail_airfoil,
+        )
+    ]
+)
+
+plane = asb.Airplane(
+    wings = [wing, vstab, hstab]
+)
+
+avl = asb.AVL(
+    verbose=False,
+    airplane=plane,
+    op_point=asb.OperatingPoint(
+        velocity=10, # m/s
+        alpha=0, # deg
+        beta=0, # deg
+        p=0, # rad/sec
+        q=0, # rad/sec
+        r=0, # rad/sec
+    ),
+    avl_command = r"c:/Users/noahw/Downloads/avl.exe"
+)
+
+avl.open_interactive()
+outputs = avl.run()
+
+print(f"AVL CL: ", outputs['CL'])
